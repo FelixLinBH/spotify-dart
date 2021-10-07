@@ -20,7 +20,7 @@ class Me extends EndpointPaging {
   BundledPages following(FollowingType type) {
     return _getBundledPages('$_path/following?type=${type.key}', {
       'artists': (json) => Artist.fromJson(json),
-    });
+    },{});
   }
 
   Future<Player> currentlyPlaying() async {

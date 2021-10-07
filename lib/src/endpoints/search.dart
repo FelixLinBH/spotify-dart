@@ -22,6 +22,7 @@ class Search extends EndpointPaging {
     String searchQuery, {
     Iterable<SearchType> types = SearchType.all,
     String market = '',
+    Map<String, String> headers
   }) {
     var type = types.map((type) => type.key).join(',');
 
@@ -39,7 +40,7 @@ class Search extends EndpointPaging {
       'tracks': (json) => Track.fromJson(json),
       'shows': (json) => Show.fromJson(json),
       'episodes': (json) => Episode.fromJson(json)
-    });
+    },headers);
   }
 }
 

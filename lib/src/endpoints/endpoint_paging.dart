@@ -11,9 +11,9 @@ abstract class EndpointPaging extends EndpointBase {
       Pages(_api, path, pageItemParser, pageKey, pageContainerParser);
 
   BundledPages _getBundledPages<T>(
-          String path, Map<String, ParserFunction<T>> pageItemParsers,
+          String path, Map<String, ParserFunction<T>> pageItemParsers,  Map<String, String> headers,
           [String pageKey, ParserFunction<Object> pageContainerParser]) =>
-      BundledPages(_api, path, pageItemParsers, pageKey, pageContainerParser);
+      BundledPages(_api, path, pageItemParsers, headers, pageKey, pageContainerParser);
 }
 
 class Page<T> {
@@ -157,8 +157,8 @@ class Pages<T> extends _Pages<Page<T>> {
 
 class BundledPages extends _Pages<List<Page<Object>>> {
   final Map<String, ParserFunction<Object>> _pageMappers;
-
-  BundledPages(SpotifyApiBase api, String path, this._pageMappers,
+  final Map<String, String> _headers;
+  BundledPages(SpotifyApiBase api, String path, this._pageMappers, this._headers,
       [String pageKey, ParserFunction<Object> pageContainerParser])
       : super(api, path, pageKey, pageContainerParser);
 
@@ -167,7 +167,7 @@ class BundledPages extends _Pages<List<Page<Object>>> {
     var pathDelimiter = _path.contains('?') ? '&' : '?';
     var path = '$_path${pathDelimiter}limit=$limit&offset=$offset';
 
-    return _api._get(path).then(_parseBundledPage);
+    return _api._get(path,headers: _headers).then(_parseBundledPage);
   }
 
   List<Page<Object>> _parseBundledPage(String jsonString) {

@@ -78,6 +78,15 @@ class Playlists extends EndpointPaging {
     await _api._delete(url, body);
   }
 
+  Future<Null> reorderTrack(int fromIndex, int toIndex, String playlistId) async {
+    final url = 'v1/playlists/$playlistId/tracks';
+    final body = jsonEncode({
+      'range_start': fromIndex,
+      'insert_before': toIndex,
+    });
+    await _api._put(url, body);
+  }
+
   /// [country] - a country: an ISO 3166-1 alpha-2 country code. Provide this
   /// parameter to ensure that the category exists for a particular country.
   ///

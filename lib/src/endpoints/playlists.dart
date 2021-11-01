@@ -78,6 +78,29 @@ class Playlists extends EndpointPaging {
     await _api._delete(url, body);
   }
 
+  Future<Null> removeTracks(List<String> trackUris, String playlistId) async {
+    final url = 'v1/playlists/$playlistId/tracks';
+    final tracks = trackUris.map((e) => {'uri': e}).toList();
+    final body = jsonEncode({
+      'tracks': tracks
+    });
+    await _api._delete(url, body);
+  }
+
+  Future<Null> replaceTracks(List<String> trackUris, String playlistId) async {
+    var query = '?uris=';
+    for (var uri in trackUris) {
+      query += '$uri,';
+    }
+    final url = 'v1/playlists/$playlistId/tracks' + query;
+    final body = jsonEncode({
+      'range_start': 0,
+      'range_length': 100,
+      'insert_before': 0,
+    });
+    await _api._put(url, body);
+  }
+
   Future<Null> reorderTrack(int fromIndex, int toIndex, String playlistId) async {
     final url = 'v1/playlists/$playlistId/tracks';
     final body = jsonEncode({

@@ -4,7 +4,8 @@
 part of spotify;
 
 class Tracks extends EndpointBase {
-  TracksMe _me;
+  late TracksMe _me;
+
   @override
   String get _path => 'v1/tracks';
 

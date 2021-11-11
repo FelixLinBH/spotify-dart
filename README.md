@@ -20,6 +20,7 @@ This flow is recommended when you only need access to public Spotify data. It ca
 final credentials = SpotifyApiCredentials(clientId, clientSecret);
 final spotify = SpotifyApi(credentials);
 ```
+See the [wiki](https://github.com/rinukkusu/spotify-dart/wiki) for a list of implemented API endpoints.
 
 #### Authorization Code Flow
 This flow is suitable for long-running applications when you need to access or manage a user's private data. The Authorization Code Flow is a complex process, so it's highly recommended to read through [Spotify's Authorization Guide][spotify_auth] before attempting. Note that this package simplifies the creation of the authorization URI and the process of requesting tokens after receiving an authorization code.
@@ -127,7 +128,28 @@ final spotifyCredentials = SpotifyApiCredentials(
   );
 
 final spotify = SpotifyApi(spotifyCredentials);
+
+//The refresh token can be used to obtain just one access token. After token retrieval, a new refresh token is provided.
+someService.saveCredentials(spotify.getCredentials());
 ```
+
+If, for any reason, you are planning to leave the app open in the background for a very long time and access Spotify's API with variable intervals, spotify-dart will automatically refresh the token if it's expired and updates you with the new credentials (in particular you need the new refresh token) by using the following methods.
+
+```dart
+SpotifyApi api = SpotifyApi(spotifyCredentials, onCredentialsRefreshed: (SpotifyApiCredentials newCred) async {
+          await _saveCredentials(newCred);
+          print("Saved from oauth" + newCred.refreshToken);
+        });
+``` 
+
+#### Access Token authentication
+In case you already have a valid access token and you don't need to complete any of the above flows you can use this constructor.
+
+```dart
+var spotify = SpotifyApi.withAccessToken(accessToken);
+```
+
+In that case, you are responsible of refreshing and updating the token accordingly.
 
 ## Features and bugs
 

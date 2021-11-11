@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.6.0
+
+- fix following artist
+- add user saved shows endpoint
+- fix episode listing
+- clean up album models
+- add null safety
+
+## 0.5.1
+
+- add createPlaylist optional parameters
+
+## 0.5.0
+
+- add tracks to album response
+- add credentials refresh callback
+
 ## 0.4.0
 
 - implement podcast endpoints 

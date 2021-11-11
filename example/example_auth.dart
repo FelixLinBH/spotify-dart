@@ -6,6 +6,12 @@ import 'dart:io';
 
 import 'package:spotify/spotify.dart';
 
+const _scopes = [
+  'user-read-playback-state',
+  'user-follow-read',
+  'playlist-modify-private'
+];
+
 void main() async {
   var keyJson = await File('example/.apikeys').readAsString();
   var keyMap = json.decode(keyJson);
@@ -17,19 +23,21 @@ void main() async {
   }
   await _currentlyPlaying(spotify);
   await _devices(spotify);
+  await _followingArtists(spotify);
+  //await _createPrivatePlaylist(spotify);
 
   exit(0);
 }
 
-Future<SpotifyApi> _getUserAuthenticatedSpotifyApi(
+Future<SpotifyApi?> _getUserAuthenticatedSpotifyApi(
     SpotifyApiCredentials credentials) async {
   print(
       'Please paste your redirect url (from your spotify application\'s redirect url):');
   var redirect = stdin.readLineSync();
 
   var grant = SpotifyApi.authorizationCodeGrant(credentials);
-  var authUri = grant.getAuthorizationUrl(Uri.parse(redirect),
-      scopes: ['user-read-playback-state']);
+  var authUri =
+      grant.getAuthorizationUrl(Uri.parse(redirect!), scopes: _scopes);
 
   print(
       'Please paste this url \n\n$authUri\n\nto your browser and enter the redirected url:');
@@ -45,17 +53,17 @@ Future<SpotifyApi> _getUserAuthenticatedSpotifyApi(
   return SpotifyApi.fromClient(client);
 }
 
-void _currentlyPlaying(SpotifyApi spotify) async =>
-    await spotify.me.currentlyPlaying().then((a) {
+Future<void> _currentlyPlaying(SpotifyApi spotify) async =>
+    await spotify.me.currentlyPlaying().then((Player? a) {
       if (a == null) {
         print('Nothing currently playing.');
         return;
       }
-      print('Currently playing: ${a.item.name}');
+      print('Currently playing: ${a.item?.name}');
     }).catchError(_prettyPrintError);
 
-void _devices(SpotifyApi spotify) async =>
-    await spotify.me.devices().then((devices) {
+Future<void> _devices(SpotifyApi spotify) async =>
+    await spotify.me.devices().then((Iterable<Device>? devices) {
       if (devices == null) {
         print('No devices currently playing.');
         return;
@@ -64,7 +72,28 @@ void _devices(SpotifyApi spotify) async =>
       print(devices.map((device) => device.name).join(', '));
     }).catchError(_prettyPrintError);
 
-void _prettyPrintError(Exception error) {
+Future<void> _followingArtists(SpotifyApi spotify) async {
+  var cursorPage = spotify.me.following(FollowingType.artist);
+  await cursorPage.first().then((cursorPage) {
+    print(cursorPage.items!.map((artist) => artist.name).join(', '));
+  }).catchError((ex) => _prettyPrintError(ex));
+}
+
+void _createPrivatePlaylist(SpotifyApi spotify) async {
+  var user = await spotify.me.get();
+  await spotify.playlists
+      .createPlaylist(
+    user.id!,
+    'Cool New Playlist 2',
+    description: 'Songs to test by',
+    public: false,
+  )
+      .then((playlist) {
+    print('Private playlist created!');
+  }).catchError(_prettyPrintError);
+}
+
+void _prettyPrintError(Object error) {
   if (error is SpotifyException) {
     print('${error.status} : ${error.message}');
   } else {

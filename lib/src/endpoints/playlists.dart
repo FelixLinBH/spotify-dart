@@ -36,10 +36,24 @@ class Playlists extends EndpointPaging {
   /// [userId] - the Spotify user ID
   ///
   /// [playlistName] - the name of the new playlist
-  Future<Playlist> createPlaylist(String userId, String playlistName, {isPublic = false}) async {
+  ///
+  /// [public] - Defaults to `true`. If `true` the playlist will be public,
+  /// if `false` it will be private.
+  ///
+  /// [collaborative] - Defaults to `false`. If `true` the playlist will
+  /// be collaborative.
+  ///
+  /// [description] - the description of the new playlist
+  Future<Playlist> createPlaylist(String userId, String playlistName,
+      {bool? public, bool? collaborative, String? description}) async {
     final url = 'v1/users/$userId/playlists';
-    final playlistJson =
-        await _api._post(url, jsonEncode({'name': playlistName, 'public': isPublic}));
+    final json = <String, dynamic>{'name': playlistName};
+
+    if (public != null) json['public'] = public;
+    if (collaborative != null) json['collaborative'] = collaborative;
+    if (description != null) json['description'] = description;
+
+    final playlistJson = await _api._post(url, jsonEncode(json));
     return await Playlist.fromJson(jsonDecode(playlistJson));
   }
 
@@ -65,7 +79,7 @@ class Playlists extends EndpointPaging {
   }
 
   Future<Null> removeTrack(String trackUri, String playlistId,
-      [List<int> positions]) async {
+      [List<int>? positions]) async {
     final url = 'v1/playlists/$playlistId/tracks';
     final track = <String, dynamic>{'uri': trackUri};
     if (positions != null) {
@@ -123,7 +137,7 @@ class Playlists extends EndpointPaging {
   ///
   /// [categoryId] - the Spotify category ID for the category.
   Pages<PlaylistSimple> getByCategoryId(String categoryId,
-      {String country, String locale}) {
+      {String? country, String? locale}) {
     final query = _buildQuery({'country': country, 'locale': locale});
 
     return _getPages(

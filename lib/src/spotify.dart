@@ -4,8 +4,9 @@
 part of spotify;
 
 class SpotifyApi extends SpotifyApiBase {
-  SpotifyApi(SpotifyApiCredentials credentials)
-      : super(credentials, http.Client());
+  SpotifyApi(SpotifyApiCredentials credentials,
+      {Function(SpotifyApiCredentials)? onCredentialsRefreshed})
+      : super(credentials, http.Client(), onCredentialsRefreshed);
 
   SpotifyApi.fromClient(FutureOr<oauth2.Client> client)
       : super.fromClient(client);
@@ -14,8 +15,13 @@ class SpotifyApi extends SpotifyApiBase {
       oauth2.AuthorizationCodeGrant grant, String responseUri)
       : super.fromAuthCodeGrant(grant, responseUri);
 
+  SpotifyApi.withAccessToken(String accessToken)
+      : super._withAccessToken(accessToken);
+
   static oauth2.AuthorizationCodeGrant authorizationCodeGrant(
-      SpotifyApiCredentials credentials) {
-    return SpotifyApiBase.authorizationCodeGrant(credentials, http.Client());
+      SpotifyApiCredentials credentials,
+      {Function(SpotifyApiCredentials)? onCredentialsRefreshed}) {
+    return SpotifyApiBase.authorizationCodeGrant(
+        credentials, http.Client(), onCredentialsRefreshed);
   }
 }

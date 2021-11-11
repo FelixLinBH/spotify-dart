@@ -16,9 +16,9 @@ abstract class EndpointPaging extends EndpointBase {
       CursorPages(_api, path, pageItemParser, pageKey, pageContainerParser);
 
   BundledPages _getBundledPages<T>(
-          String path, Map<String, ParserFunction<T>> pageItemParsers,  Map<String, String> headers,
-          [String pageKey, ParserFunction<Object> pageContainerParser]) =>
-      BundledPages(_api, path, pageItemParsers, headers, pageKey, pageContainerParser);
+          String path, Map<String, ParserFunction<T>> pageItemParsers,  Map<String, String>? headers,
+          [String? pageKey, ParserFunction<Object>? pageContainerParser]) =>
+      BundledPages(_api, path, pageItemParsers, headers ?? {} , pageKey, pageContainerParser);
 }
 
 class Page<T> {
@@ -206,11 +206,12 @@ class CursorPages<T> extends _Pages with CursorStrategy<CursorPage<T>> {
 }
 
 class BundledPages extends _Pages with OffsetStrategy<List<Page<dynamic>>> {
-  final Map<String, ParserFunction<Object>> _pageMappers;
+  final Map<String, ParserFunction<dynamic>> _pageMappers;
   final Map<String, String> _headers;
   BundledPages(SpotifyApiBase api, String path, this._pageMappers, this._headers,
-      [String pageKey, ParserFunction<dynamic>? pageContainerParser])
+      [String? pageKey, ParserFunction<dynamic>? pageContainerParser])
       : super(api, path, pageKey, pageContainerParser);
+
 
   @override
   Future<List<Page<dynamic>>> getPage(int limit, int offset) async {

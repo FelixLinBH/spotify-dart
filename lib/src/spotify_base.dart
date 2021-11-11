@@ -131,8 +131,8 @@ abstract class SpotifyApiBase {
     );
   }
 
-  Future<String> _get(String path, {Map<String, String> headers}) {
-    return _getImpl('${_baseUrl}/$path', headers);
+  Future<String> _get(String path, {Map<String, String>? headers}) {
+    return _getImpl('${_baseUrl}/$path', headers ?? {});
   }
 
   Future<String> _post(String path, [String body = '']) {

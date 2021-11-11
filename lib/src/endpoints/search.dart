@@ -22,7 +22,7 @@ class Search extends EndpointPaging {
     String searchQuery, {
     Iterable<SearchType> types = SearchType.all,
     String market = '',
-    Map<String, String> headers
+    Map<String, String>? headers
   }) {
     var type = types.map((type) => type.key).join(',');
 

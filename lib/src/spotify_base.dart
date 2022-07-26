@@ -201,7 +201,7 @@ abstract class SpotifyApiBase {
 
   String handleErrors(http.Response response) {
     final responseBody = utf8.decode(response.bodyBytes);
-    if (response.statusCode >= 400) {
+    if (response.statusCode >= 400 && responseBody.isNotEmpty) {
       final jsonMap = json.decode(responseBody);
       final error = SpotifyError.fromJson(jsonMap['error']);
       if (response.statusCode == 429) {

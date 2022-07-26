@@ -64,10 +64,13 @@ class Me extends EndpointPaging {
   /// Get the current user's top tracks.
   Future<Iterable<Track>> topTracks() async {
     var jsonString = await _api._get('$_path/top/tracks');
-    var map = json.decode(jsonString);
-
-    var items = map['items'] as Iterable<dynamic>;
-    return items.map((item) => Track.fromJson(item));
+    if (jsonString.isNotEmpty) {
+      var map = json.decode(jsonString);
+      var items = map['items'] as Iterable<dynamic>;
+      return items.map((item) => Track.fromJson(item));
+    } else {
+      return Iterable<Track>.empty();
+    }
   }
 
   /// Get the current user's top artists.
